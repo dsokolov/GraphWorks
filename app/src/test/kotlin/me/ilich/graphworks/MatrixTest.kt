@@ -79,4 +79,18 @@ class MatrixTest {
         assertTrue(m[0, 1] == null)
     }
 
+    @Test
+    fun equalsTest(){
+        assertNotEquals(null, Matrix<Node>(0))
+        assertNotEquals(null, Matrix<Node>(1))
+        assertNotEquals(null, Matrix<Node>(10))
+
+        assertEquals(Matrix<Node>(0), Matrix<Node>(0))
+        assertEquals(Matrix<Node>(1), Matrix<Node>(1))
+        assertEquals(Matrix<Node>(10), Matrix<Node>(10))
+
+        assertNotEquals(Matrix<Node>(0), Matrix<Node>(1))
+        assertNotEquals(Matrix<Node>(0), Matrix<Node>(10))
+    }
+
 }

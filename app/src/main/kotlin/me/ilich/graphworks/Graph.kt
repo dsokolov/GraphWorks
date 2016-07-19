@@ -5,23 +5,24 @@ import me.ilich.graphworks.nodes.Node
 /**
  * Created by disokolov on 13.07.16.
  */
-class Graph(val nodesCount: Int) {
+class Graph(vararg pos: Pos) {
 
-    private val nodes = kotlin.arrayOfNulls<Node?>(nodesCount)
+    class Pos(val node: Node, val pos: Int, val parent: Int? = null)
+
+    private val nodesCount = pos.size
+    private val nodes: List<Node>;
     private val matrix = Matrix<Int>(nodesCount)
 
-    fun root(node: Node) {
-        matrix.clear()
-        for (i in 0..nodes.size - 1) {
-            nodes[i] = null;
+    init {
+        val l: MutableList<Node> = mutableListOf()
+        pos.forEach {
+            l.add(it.node)
+            if (it.parent != null) {
+                matrix[it.parent, it.pos] = 1
+                matrix[it.pos, it.parent] = -1
+            }
         }
-        nodes[0] = node;
-    }
-
-    fun add(node: Node, pos: Int, parent: Int) {
-        nodes[pos] = node;
-        matrix[parent, pos] = 1
-        matrix[pos, parent] = -1;
+        nodes = l.toList()
     }
 
     fun calc(): Double = calcFromIndex(0)
@@ -41,9 +42,7 @@ class Graph(val nodesCount: Int) {
 
     fun subGraph(fromIndex: Int): Graph {
         val size = outgoingLinksRecursive(fromIndex)
-        val g = Graph(size)
-        val rootNode = nodes[fromIndex]
-        g.root(rootNode!!)
+        val g = Graph()
         return g
     }
 
@@ -57,6 +56,26 @@ class Graph(val nodesCount: Int) {
             }
         }
         return size
+    }
+
+    override fun equals(other: Any?): Boolean{
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Graph
+
+        if (nodesCount != other.nodesCount) return false
+        if (nodes != other.nodes) return false
+        if (matrix != other.matrix) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int{
+        var result = nodesCount
+        result = 31 * result + nodes.hashCode()
+        result = 31 * result + matrix.hashCode()
+        return result
     }
 
 }

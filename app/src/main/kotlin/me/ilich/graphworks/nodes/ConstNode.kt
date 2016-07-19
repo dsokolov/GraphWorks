@@ -7,6 +7,8 @@ class ConstNode(var value: Double) : NoArgNode() {
 
     override fun onCalc(): Double = value
 
+    override fun onAsString(): String = value.toString()
+
     override fun equals(other: Any?): Boolean{
         if (this === other) return true
         if (other?.javaClass != javaClass) return false

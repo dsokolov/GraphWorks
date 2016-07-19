@@ -9,4 +9,8 @@ abstract class Node {
 
     protected abstract fun onCalc(vararg arg: Double): Double
 
+    fun asString(vararg arg: Double): String = onAsString(*arg)
+
+    protected abstract fun onAsString(vararg arg: Double): String
+
 }

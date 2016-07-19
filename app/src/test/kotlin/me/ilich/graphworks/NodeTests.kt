@@ -11,12 +11,14 @@ class NodeTests {
     fun constNode() {
         val node = ConstNode(10.0)
         assertEquals(10.0, node.calc(), 0.1)
+        assertEquals(node.asString(), "10.0")
     }
 
     @Test
     fun sumNode() {
         val node = SumNode()
         assertEquals(30.0, node.calc(10.0, 20.0), 0.1)
+        assertEquals(node.asString(10.0, 20.0), "10.0 + 20.0")
     }
 
 

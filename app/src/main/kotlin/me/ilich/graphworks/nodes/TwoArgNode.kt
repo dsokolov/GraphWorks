@@ -9,4 +9,8 @@ abstract class TwoArgNode : Node() {
 
     protected abstract fun onCalc(a: Double, b: Double): Double
 
+    override fun onAsString(vararg arg: Double): String = onAsString(arg[0], arg[1])
+
+    protected abstract fun onAsString(a: Double, b: Double): String
+
 }

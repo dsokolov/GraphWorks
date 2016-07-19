@@ -9,4 +9,8 @@ abstract class NoArgNode : Node() {
 
     protected abstract fun onCalc(): Double
 
+    override fun onAsString(vararg arg: Double): String = onAsString()
+
+    protected abstract fun onAsString(): String
+
 }
