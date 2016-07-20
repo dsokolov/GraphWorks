@@ -37,7 +37,24 @@ class Graph(vararg pos: Pos) {
                 args.add(v)
             }
         }
-        return node!!.calc(*args.toDoubleArray());
+        return node.calc(*args.toDoubleArray());
+    }
+
+    fun asString(): String {
+        return stringFromIndex(0)
+    }
+
+    private fun stringFromIndex(fromIndex: Int): String {
+        val node = nodes[fromIndex];
+        val args = mutableListOf<String>()
+        for (toIndex in 0..nodesCount - 1) {
+            val link = matrix[fromIndex, toIndex]
+            if (link == 1) {
+                val v = stringFromIndex(toIndex)
+                args.add(v)
+            }
+        }
+        return node.asString(*args.toTypedArray());
     }
 
     fun subGraph(fromIndex: Int): Graph {

@@ -1,16 +1,19 @@
 package me.ilich.graphworks.nodes
 
-/**
- * Created by disokolov on 13.07.16.
- */
-abstract class Node {
+abstract class Node(val argCount: Int) {
 
-    fun calc(vararg arg: Double): Double = onCalc(*arg)
+    fun calc(vararg arg: Double): Double {
+        assert(arg.size == argCount)
+        return onCalc(*arg)
+    }
 
     protected abstract fun onCalc(vararg arg: Double): Double
 
-    fun asString(vararg arg: Double): String = onAsString(*arg)
+    fun asString(vararg arg: String): String {
+        assert(arg.size == argCount)
+        return onAsString(*arg)
+    }
 
-    protected abstract fun onAsString(vararg arg: Double): String
+    protected abstract fun onAsString(vararg arg: String): String
 
 }

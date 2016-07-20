@@ -36,7 +36,7 @@ class Matrix<T>(val size: Int, val defaultCell: T? = null) {
         fill()
     }
 
-    override fun equals(other: Any?): Boolean{
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
@@ -48,10 +48,32 @@ class Matrix<T>(val size: Int, val defaultCell: T? = null) {
         return true
     }
 
-    override fun hashCode(): Int{
+    override fun hashCode(): Int {
         var result = size
         result = 31 * result + cells.hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        val sb = StringBuilder();
+        if (size == 0) {
+            sb.append("()")
+        } else {
+            for (i in 0..size - 1) {
+                sb.append("( ")
+                for (j in 0..size - 1) {
+                    sb.append("${this[i, j]}")
+                    if (j != size - 1) {
+                        sb.append(", ")
+                    }
+                }
+                sb.append(" )")
+                if (i != size - 1) {
+                    sb.append("\n")
+                }
+            }
+        }
+        return sb.toString()
     }
 
 }

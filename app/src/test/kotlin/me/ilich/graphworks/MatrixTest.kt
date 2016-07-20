@@ -72,7 +72,7 @@ class MatrixTest {
     }
 
     @Test
-    fun clear(){
+    fun clear() {
         val m = Matrix<Node>(2)
         m[0, 1] = ConstNode(1.0)
         m.clear()
@@ -80,7 +80,7 @@ class MatrixTest {
     }
 
     @Test
-    fun equalsTest(){
+    fun equalsTest() {
         assertNotEquals(null, Matrix<Node>(0))
         assertNotEquals(null, Matrix<Node>(1))
         assertNotEquals(null, Matrix<Node>(10))
@@ -91,6 +91,20 @@ class MatrixTest {
 
         assertNotEquals(Matrix<Node>(0), Matrix<Node>(1))
         assertNotEquals(Matrix<Node>(0), Matrix<Node>(10))
+    }
+
+    @Test
+    fun toStr() {
+        assertEquals("()", Matrix<Int>(0).toString())
+        val m1 = Matrix<Int>(1)
+        m1[0, 0] = 1
+        assertEquals("( 1 )", m1.toString())
+        val m2 = Matrix<Int>(2)
+        m2[0, 0] = 0
+        m2[0, 1] = 1
+        m2[1, 0] = 2
+        m2[1, 1] = 3
+        assertEquals("( 0, 1 )\n( 2, 3 )", m2.toString())
     }
 
 }
