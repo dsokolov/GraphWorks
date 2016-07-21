@@ -5,7 +5,7 @@ package me.ilich.graphworks.nodes
  */
 class ConstNode(var value: Double) : NoArgNode() {
 
-    override fun onCalc(): Double = value
+    override fun onCalc(paramSource: ParamSource?): Double = value
 
     override fun onAsString(): String = value.toString()
 
@@ -22,6 +22,10 @@ class ConstNode(var value: Double) : NoArgNode() {
 
     override fun hashCode(): Int{
         return value.hashCode()
+    }
+
+    override fun toString(): String{
+        return "Node $value"
     }
 
 }

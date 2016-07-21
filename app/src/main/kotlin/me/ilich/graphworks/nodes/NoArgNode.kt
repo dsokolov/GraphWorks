@@ -5,9 +5,9 @@ package me.ilich.graphworks.nodes
  */
 abstract class NoArgNode : Node(0) {
 
-    override fun onCalc(vararg arg: Double): Double = onCalc()
+    override fun onCalc(vararg arg: Double, paramSource: ParamSource?): Double = onCalc(paramSource)
 
-    protected abstract fun onCalc(): Double
+    protected abstract fun onCalc(paramSource: ParamSource?): Double
 
     override fun onAsString(vararg arg: String): String = onAsString()
 

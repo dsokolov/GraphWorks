@@ -1,13 +1,10 @@
 package me.ilich.graphworks.nodes
 
-/**
- * Created by disokolov on 13.07.16.
- */
 abstract class TwoArgNode : Node(2) {
 
-    override fun onCalc(vararg arg: Double): Double = onCalc(arg[0], arg[1])
+    override fun onCalc(vararg arg: Double, paramSource: ParamSource?): Double = onCalc(arg[0], arg[1], paramSource)
 
-    protected abstract fun onCalc(a: Double, b: Double): Double
+    protected abstract fun onCalc(a: Double, b: Double, paramSource: ParamSource?): Double
 
     override fun onAsString(vararg arg: String): String = onAsString(arg[0], arg[1])
 

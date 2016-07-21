@@ -1,6 +1,7 @@
 package me.ilich.graphworks
 
 import me.ilich.graphworks.nodes.Node
+import me.ilich.graphworks.nodes.ParamSource
 
 /**
  * Created by disokolov on 13.07.16.
@@ -11,7 +12,7 @@ class Graph(vararg pos: Pos) {
 
     private val nodesCount = pos.size
     private val nodes: List<Node>;
-    private val matrix = Matrix<Int>(nodesCount)
+    private val matrix = Matrix<Int>(nodesCount, 0)
 
     init {
         val l: MutableList<Node> = mutableListOf()
@@ -25,23 +26,27 @@ class Graph(vararg pos: Pos) {
         nodes = l.toList()
     }
 
-    fun calc(): Double = calcFromIndex(0)
+    fun calc(paramSource: ParamSource? = null): Double = calcFromIndex(0, paramSource)
 
-    private fun calcFromIndex(fromIndex: Int): Double {
+    private fun calcFromIndex(fromIndex: Int, paramSource: ParamSource? = null): Double {
         val node = nodes[fromIndex];
         val args = mutableListOf<Double>()
         for (toIndex in 0..nodesCount - 1) {
             val link = matrix[fromIndex, toIndex]
             if (link == 1) {
-                val v = calcFromIndex(toIndex)
+                val v = calcFromIndex(toIndex, paramSource = paramSource)
                 args.add(v)
             }
         }
-        return node.calc(*args.toDoubleArray());
+        return node.calc(*args.toDoubleArray(), paramSource = paramSource);
     }
 
     fun asString(): String {
-        return stringFromIndex(0)
+        if (nodesCount == 0) {
+            return "()"
+        } else {
+            return stringFromIndex(0)
+        }
     }
 
     private fun stringFromIndex(fromIndex: Int): String {
@@ -58,9 +63,27 @@ class Graph(vararg pos: Pos) {
     }
 
     fun subGraph(fromIndex: Int): Graph {
-        val size = outgoingLinksRecursive(fromIndex)
-        val g = Graph()
-        return g
+        val subNodes = mutableListOf<Pos>()
+        val rootNode = nodes[fromIndex]
+        subNodes.add(Pos(rootNode, 0))
+        addSubNodes(subNodes, fromIndex)
+        return Graph(*subNodes.toTypedArray())
+    }
+
+    private fun addSubNodes(list: MutableList<Pos>, parentIndex: Int) {
+        val subIndexes = mutableListOf<Int>()
+        for (toIndex in 0..nodesCount - 1) {
+            val link = matrix[parentIndex, toIndex]
+            if (link == 1) {
+                val node = nodes[toIndex]
+                val pos = list.size
+                list.add(Pos(node, pos, parentIndex))
+                subIndexes.add(toIndex)
+            }
+        }
+        for (subIndex in subIndexes) {
+            addSubNodes(list, subIndex)
+        }
     }
 
     fun outgoingLinksRecursive(fromIndex: Int): Int {
@@ -75,7 +98,7 @@ class Graph(vararg pos: Pos) {
         return size
     }
 
-    override fun equals(other: Any?): Boolean{
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
@@ -88,11 +111,19 @@ class Graph(vararg pos: Pos) {
         return true
     }
 
-    override fun hashCode(): Int{
+    override fun hashCode(): Int {
         var result = nodesCount
         result = 31 * result + nodes.hashCode()
         result = 31 * result + matrix.hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        val sb = StringBuilder()
+        sb.append("expr = ${asString()}\n")
+        sb.append("matrix:\n")
+        sb.append(matrix.toString())
+        return sb.toString()
     }
 
 }
