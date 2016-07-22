@@ -10,9 +10,9 @@ class GraphTests {
     @Test
     fun calcA() {
         val g = Graph(
-                Graph.Pos(AddNode(), 0),
-                Graph.Pos(ConstNode(4.0), 1, 0),
-                Graph.Pos(ConstNode(5.0), 2, 0)
+                Graph.Pos(AddNode()),
+                Graph.Pos(ConstNode(4.0), parent = 0),
+                Graph.Pos(ConstNode(5.0), parent = 0)
         )
         assertEquals(9.0, g.calc(), 0.1)
         assertEquals("( 4.0 + 5.0 )", g.asString())
@@ -21,7 +21,7 @@ class GraphTests {
     @Test
     fun calcB() {
         val g = Graph(
-                Graph.Pos(ConstNode(10.0), 1)
+                Graph.Pos(ConstNode(10.0))
         )
         assertEquals(g.calc(), 10.0, 0.1)
         assertEquals("10.0", g.asString())
@@ -30,11 +30,11 @@ class GraphTests {
     @Test
     fun calcC() {
         val g = Graph(
-                Graph.Pos(AddNode(), 0),
-                Graph.Pos(AddNode(), 1, 0),
-                Graph.Pos(ConstNode(1.0), 2, 0),
-                Graph.Pos(ConstNode(2.0), 3, 1),
-                Graph.Pos(ConstNode(3.0), 4, 1)
+                Graph.Pos(AddNode()),
+                Graph.Pos(AddNode(), parent = 0),
+                Graph.Pos(ConstNode(1.0), parent = 0),
+                Graph.Pos(ConstNode(2.0), parent = 1),
+                Graph.Pos(ConstNode(3.0), parent = 1)
         )
         assertEquals(g.calc(), 6.0, 0.1)
         assertEquals("( ( 2.0 + 3.0 ) + 1.0 )", g.asString())
@@ -55,15 +55,27 @@ class GraphTests {
         }
 
         val g = Graph(
-                Graph.Pos(AddNode(), 0),
-                Graph.Pos(MultNode(), 1, 0),
-                Graph.Pos(ParamNode("x"), 2, 1),
-                Graph.Pos(ParamNode("y"), 3, 1),
-                Graph.Pos(ConstNode(4.0), 4, 0)
+                Graph.Pos(AddNode()),
+                Graph.Pos(MultNode(), parent = 0),
+                Graph.Pos(ParamNode("x"), parent = 1),
+                Graph.Pos(ParamNode("y"), parent = 1),
+                Graph.Pos(ConstNode(4.0), parent = 0)
         )
         assertEquals(10.0, g.calc(paramSource = source), 0.1)
         assertEquals("( ( x * y ) + 4.0 )", g.asString())
     }
+/*
+
+    @Test
+    fun calcE() {
+        val g = Graph {
+            AddNode {
+                ConstNode(1.0),
+                ConstNode(2.0)
+            }
+        }
+    }
+*/
 
     @Test
     fun outgoingLinks() {
@@ -181,6 +193,26 @@ class GraphTests {
         assertEquals(sub4, big.subGraph(4))
         assertEquals(sub0, big.subGraph(0))
         assertEquals(sub1, big.subGraph(1))
+    }
+
+    @Test
+    fun replaceTest() {
+        val g0 = Graph(
+                Graph.Pos(AddNode(), 0),
+                Graph.Pos(ConstNode(2.0), 1, 0),
+                Graph.Pos(ConstNode(3.0), 2, 0)
+        )
+        val g1 = Graph(
+                Graph.Pos(ConstNode(30.0), 0, 0)
+        )
+        val g3 = Graph(
+                Graph.Pos(AddNode(), 0),
+                Graph.Pos(ConstNode(2.0), 1, 0),
+                Graph.Pos(ConstNode(30.0), 2, 0)
+        )
+        assertEquals(g1, g0.replaceNode(0, g1))
+        assertEquals(g0, g0.replaceNode(0, g0))
+        assertEquals(g3, g0.replaceNode(2, g1))
     }
 
 }

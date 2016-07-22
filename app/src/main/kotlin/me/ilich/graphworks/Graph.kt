@@ -1,14 +1,12 @@
 package me.ilich.graphworks
 
+import me.ilich.graphworks.nodes.ConstNode
 import me.ilich.graphworks.nodes.Node
 import me.ilich.graphworks.nodes.ParamSource
 
-/**
- * Created by disokolov on 13.07.16.
- */
 class Graph(vararg pos: Pos) {
 
-    class Pos(val node: Node, val pos: Int, val parent: Int? = null)
+    class Pos(val node: Node, val pos: Int? = null, val parent: Int? = null)
 
     private val nodesCount = pos.size
     private val nodes: List<Node>;
@@ -19,8 +17,14 @@ class Graph(vararg pos: Pos) {
         pos.forEach {
             l.add(it.node)
             if (it.parent != null) {
-                matrix[it.parent, it.pos] = 1
-                matrix[it.pos, it.parent] = -1
+                val p = when (it.pos) {
+                    null -> l.size
+                    else -> it.pos
+                }
+                if (it.parent != p) {
+                    matrix[it.parent, p] = 1
+                    matrix[p, it.parent] = -1
+                }
             }
         }
         nodes = l.toList()
@@ -66,24 +70,8 @@ class Graph(vararg pos: Pos) {
         val subNodes = mutableListOf<Pos>()
         val rootNode = nodes[fromIndex]
         subNodes.add(Pos(rootNode, 0))
-        addSubNodes(subNodes, fromIndex)
+        collectSubNodes(this, subNodes, fromIndex)
         return Graph(*subNodes.toTypedArray())
-    }
-
-    private fun addSubNodes(list: MutableList<Pos>, parentIndex: Int) {
-        val subIndexes = mutableListOf<Int>()
-        for (toIndex in 0..nodesCount - 1) {
-            val link = matrix[parentIndex, toIndex]
-            if (link == 1) {
-                val node = nodes[toIndex]
-                val pos = list.size
-                list.add(Pos(node, pos, parentIndex))
-                subIndexes.add(toIndex)
-            }
-        }
-        for (subIndex in subIndexes) {
-            addSubNodes(list, subIndex)
-        }
     }
 
     fun outgoingLinksRecursive(fromIndex: Int): Int {
@@ -124,6 +112,69 @@ class Graph(vararg pos: Pos) {
         sb.append("matrix:\n")
         sb.append(matrix.toString())
         return sb.toString()
+    }
+
+    fun replaceNode(replaceNodeIndex: Int, graph: Graph): Graph {
+        val newGraphNodes = mutableListOf<Pos>()
+        if (replaceNodeIndex == 0) {
+            collectSubNodes(graph, newGraphNodes, null)
+        } else {
+            collectSubNodesExcept(this, newGraphNodes, null, replaceNodeIndex, graph)
+        }
+        return Graph(*newGraphNodes.toTypedArray())
+    }
+
+    private fun collectSubNodes(graph: Graph, list: MutableList<Graph.Pos>, parentIndex: Int?) {
+        val subIndexes = mutableListOf<Int>()
+        if (parentIndex == null) {
+            val node = graph.nodes[0]
+            list.add(Graph.Pos(node, 0))
+            subIndexes.add(0)
+        } else {
+            for (toIndex in 0..graph.nodesCount - 1) {
+                if (toIndex != parentIndex) {
+                    val link = graph.matrix[parentIndex, toIndex]
+                    if (link == 1) {
+                        val node = graph.nodes[toIndex]
+                        val pos = list.size
+                        list.add(Graph.Pos(node, pos, parentIndex))
+                        subIndexes.add(toIndex)
+                    }
+                }
+            }
+        }
+        for (subIndex in subIndexes) {
+            collectSubNodes(graph, list, subIndex)
+        }
+    }
+
+    private fun collectSubNodesExcept(graph: Graph, list: MutableList<Graph.Pos>, parentIndex: Int?, exceptIndex: Int, exceptGraph: Graph) {
+        val subIndexes = mutableListOf<Int>()
+        if (parentIndex == null) {
+            val node = graph.nodes[0]
+            list.add(Graph.Pos(node, 0))
+            subIndexes.add(0)
+        } else {
+            for (toIndex in 0..graph.nodesCount - 1) {
+                if (toIndex != parentIndex) {
+                    val link = graph.matrix[parentIndex, toIndex]
+                    if (link == 1) {
+                        val node = graph.nodes[toIndex]
+                        val pos = list.size
+                        list.add(Graph.Pos(node, pos, parentIndex))
+                        subIndexes.add(toIndex)
+                    }
+                }
+            }
+        }
+        for (subIndex in subIndexes) {
+            if (subIndex == exceptIndex) {
+                //collectSubNodes(exceptGraph, list, null)
+                list.add(Graph.Pos(ConstNode(999.0), parent = parentIndex))
+            } else {
+                collectSubNodesExcept(graph, list, subIndex, exceptIndex, exceptGraph)
+            }
+        }
     }
 
 }
