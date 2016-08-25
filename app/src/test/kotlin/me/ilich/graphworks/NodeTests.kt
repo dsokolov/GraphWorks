@@ -1,6 +1,6 @@
 package me.ilich.graphworks
 
-import me.ilich.graphworks.nodes.*
+import me.ilich.graphworks.operations.*
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -9,12 +9,12 @@ class NodeTests {
 
     @Test
     fun constNode() {
-        val node = ConstNode(10.0)
+        val node = Const(10.0)
         assertEquals(10.0, node.calc(), 0.1)
         assertEquals(node.asString(), "10.0")
-        assertEquals(ConstNode(10.0), node)
-        assertNotEquals(ConstNode(0.0), node)
-        assertEquals("Node 10.0", node.toString())
+        assertEquals(Const(10.0), node)
+        assertNotEquals(Const(0.0), node)
+        assertEquals("Operation 10.0", node.toString())
     }
 
 
@@ -29,58 +29,58 @@ class NodeTests {
                 }
             }
         }
-        val node = ParamNode("x")
+        val node = Param("x")
         assertEquals(5.0, node.calc(paramSource = source), 0.1)
         assertEquals(node.asString(), "x")
-        assertEquals(ParamNode("x"), node)
-        assertEquals("Node param x", node.toString())
+        assertEquals(Param("x"), node)
+        assertEquals("Operation param x", node.toString())
     }
 
     @Test
     fun absNode() {
-        val node = AbsNode()
+        val node = Abs()
         assertEquals(10.0, node.calc(-10.0), 0.1)
         assertEquals(10.0, node.calc(10.0), 0.1)
         assertEquals(0.0, node.calc(0.0), 0.1)
         assertEquals(node.asString("10.0"), "| 10.0 |")
-        assertEquals(AbsNode(), node)
-        assertEquals("Node abs()", node.toString())
+        assertEquals(Abs(), node)
+        assertEquals("Operation abs()", node.toString())
     }
 
     @Test
     fun addNode() {
-        val node = AddNode()
+        val node = Add()
         assertEquals(30.0, node.calc(10.0, 20.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 + 20.0 )")
-        assertEquals(AddNode(), node)
-        assertEquals("Node +", node.toString())
+        assertEquals(Add(), node)
+        assertEquals("Operation +", node.toString())
     }
 
     @Test
     fun subNode() {
-        val node = SubNode()
+        val node = Sub()
         assertEquals(-10.0, node.calc(10.0, 20.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 - 20.0 )")
-        assertEquals(SubNode(), node)
-        assertEquals("Node -", node.toString())
+        assertEquals(Sub(), node)
+        assertEquals("Operation -", node.toString())
     }
 
     @Test
     fun multNode() {
-        val node = MultNode()
+        val node = Mult()
         assertEquals(200.0, node.calc(10.0, 20.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 * 20.0 )")
-        assertEquals(MultNode(), node)
-        assertEquals("Node *", node.toString())
+        assertEquals(Mult(), node)
+        assertEquals("Operation *", node.toString())
     }
 
     @Test
     fun divNode() {
-        val node = DivNode()
+        val node = Div()
         assertEquals(5.0, node.calc(20.0, 4.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 / 20.0 )")
-        assertEquals(DivNode(), node)
-        assertEquals("Node /", node.toString())
+        assertEquals(Div(), node)
+        assertEquals("Operation /", node.toString())
     }
 
 }

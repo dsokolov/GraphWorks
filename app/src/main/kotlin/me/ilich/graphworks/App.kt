@@ -1,8 +1,8 @@
 package me.ilich.graphworks
 
-import me.ilich.graphworks.nodes.MultNode
-import me.ilich.graphworks.nodes.ParamNode
-import me.ilich.graphworks.nodes.ParamSource
+import me.ilich.graphworks.operations.Mult
+import me.ilich.graphworks.operations.Param
+import me.ilich.graphworks.operations.ParamSource
 
 object App {
 
@@ -10,9 +10,9 @@ object App {
         println("graph")
 
         val g = Graph(
-                Graph.Pos(MultNode(), 0),
-                Graph.Pos(ParamNode("x"), 1, 0),
-                Graph.Pos(ParamNode("x"), 2, 0)
+                Graph.Pos(Mult(), 0),
+                Graph.Pos(Param("x"), 1, 0),
+                Graph.Pos(Param("x"), 2, 0)
         )
         for (x in -10..10) {
             val y = g.calc(object : ParamSource {

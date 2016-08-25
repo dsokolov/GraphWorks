@@ -1,6 +1,6 @@
-package me.ilich.graphworks.nodes
+package me.ilich.graphworks.operations
 
-abstract class TwoArgNode : Node(2) {
+abstract class TwoArg : Operation(2) {
 
     override fun onCalc(vararg arg: Double, paramSource: ParamSource?): Double = onCalc(arg[0], arg[1], paramSource)
 

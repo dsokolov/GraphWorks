@@ -1,19 +1,19 @@
 package me.ilich.graphworks
 
-import me.ilich.graphworks.nodes.ConstNode
-import me.ilich.graphworks.nodes.Node
-import me.ilich.graphworks.nodes.ParamSource
+import me.ilich.graphworks.operations.Const
+import me.ilich.graphworks.operations.Operation
+import me.ilich.graphworks.operations.ParamSource
 
 class Graph(vararg pos: Pos) {
 
-    class Pos(val node: Node, val pos: Int? = null, val parent: Int? = null)
+    class Pos(val node: Operation, val pos: Int? = null, val parent: Int? = null)
 
     private val nodesCount = pos.size
-    private val nodes: List<Node>;
+    private val nodes: List<Operation>;
     private val matrix = Matrix<Int>(nodesCount, 0)
 
     init {
-        val l: MutableList<Node> = mutableListOf()
+        val l: MutableList<Operation> = mutableListOf()
         pos.forEach {
             l.add(it.node)
             if (it.parent != null) {
@@ -170,7 +170,7 @@ class Graph(vararg pos: Pos) {
         for (subIndex in subIndexes) {
             if (subIndex == exceptIndex) {
                 //collectSubNodes(exceptGraph, list, null)
-                list.add(Graph.Pos(ConstNode(999.0), parent = parentIndex))
+                list.add(Graph.Pos(Const(999.0), parent = parentIndex))
             } else {
                 collectSubNodesExcept(graph, list, subIndex, exceptIndex, exceptGraph)
             }

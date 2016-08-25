@@ -1,6 +1,6 @@
-package me.ilich.graphworks.nodes
+package me.ilich.graphworks.operations
 
-abstract class Node(val argCount: Int) {
+abstract class Operation(val argCount: Int) {
 
     fun calc(vararg arg: Double, paramSource: ParamSource? = null): Double {
         assert(arg.size == argCount)
@@ -20,7 +20,7 @@ abstract class Node(val argCount: Int) {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
-        other as Node
+        other as Operation
 
         if (argCount != other.argCount) return false
 

@@ -1,6 +1,6 @@
-package me.ilich.graphworks.nodes
+package me.ilich.graphworks.operations
 
-class ParamNode(val name: String) : NoArgNode() {
+class Param(val name: String) : NoArg() {
 
     override fun onCalc(paramSource: ParamSource?): Double {
         if (paramSource == null) {
@@ -13,7 +13,7 @@ class ParamNode(val name: String) : NoArgNode() {
     override fun onAsString(): String = "$name"
 
     override fun toString(): String {
-        return "Node param $name"
+        return "Operation param $name"
     }
 
     override fun equals(other: Any?): Boolean {
@@ -21,7 +21,7 @@ class ParamNode(val name: String) : NoArgNode() {
         if (other?.javaClass != javaClass) return false
         if (!super.equals(other)) return false
 
-        other as ParamNode
+        other as Param
 
         if (name != other.name) return false
 

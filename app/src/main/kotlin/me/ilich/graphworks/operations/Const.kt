@@ -1,9 +1,9 @@
-package me.ilich.graphworks.nodes
+package me.ilich.graphworks.operations
 
 /**
  * Created by disokolov on 13.07.16.
  */
-class ConstNode(var value: Double) : NoArgNode() {
+class Const(var value: Double) : NoArg() {
 
     override fun onCalc(paramSource: ParamSource?): Double = value
 
@@ -13,7 +13,7 @@ class ConstNode(var value: Double) : NoArgNode() {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
-        other as ConstNode
+        other as Const
 
         if (value != other.value) return false
 
@@ -25,7 +25,7 @@ class ConstNode(var value: Double) : NoArgNode() {
     }
 
     override fun toString(): String{
-        return "Node $value"
+        return "Operation $value"
     }
 
 }

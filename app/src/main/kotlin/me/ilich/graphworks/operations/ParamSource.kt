@@ -1,4 +1,4 @@
-package me.ilich.graphworks.nodes
+package me.ilich.graphworks.operations
 
 interface ParamSource {
 

@@ -1,77 +1,60 @@
 package me.ilich
 
-abstract class NodeContainer() {
+import me.ilich.graphworks.Node2
+import me.ilich.graphworks.operations.Add
+import me.ilich.graphworks.operations.Const
+import me.ilich.graphworks.operations.Operation
 
-    abstract fun getGraph1(): Graph
-
-    abstract fun getId(): Int?
-
+fun <T> node2(v: T, init: Node2<T>.() -> Unit = {}): Node2<T> {
+    val result = Node2(v)
+    result.init()
+    return result
 }
 
-class Node(val graph: Graph, val name: String, val id: Int) : NodeContainer() {
-
-    override fun getId(): Int = id
-
-    override fun getGraph1() = graph
-
-}
-
-class Pos(val index: Int, val parent: Int?, val node: Node)
-
-class Graph() : NodeContainer() {
-
-    override fun getId(): Int? = null
-
-    val poses = mutableListOf<Pos>()
-
-    fun print() {
-        println("begin")
-        for (pos in poses) {
-            println("${pos.index}) ${pos.parent} ${pos.node.name}")
-        }
-        println("end")
-    }
-
-    override fun getGraph1(): Graph = this
-
-}
-
-fun graph(init: Graph.() -> Unit): Graph {
-    val g = Graph()
-    g.init()
-    return g
-}
-
-fun NodeContainer.const(init: NodeContainer.() -> Unit): Node {
-    val g = this.getGraph1()
-    val id = g.poses.size
-    val parentId = this.getId()
-    val n = Node(g, "const", id)
-    g.poses.add(Pos(id, parentId, n))
-    n.init()
-    return n
-}
-
-fun NodeContainer.add(init: NodeContainer.() -> Unit): Node {
-    val g = this.getGraph1()
-    val id = g.poses.size
-    val parentId = this.getId()
-    val n = Node(g, "add", id)
-    g.poses.add(Pos(id, parentId, n))
-    n.init()
-    return n
+fun <T> Node2<T>.node2(v: T, init: Node2<T>.() -> Unit = {}) {
+    val result = Node2<T>(v)
+    result.init()
+    this.children.add(result)
 }
 
 
 fun main(args: Array<String>) {
-    val g = graph() {
-        add {
-            add {
-                const {  }
-                const {  }
+
+/*    val n = node2("a") {
+        node2("b") {
+            node2("d")
+        }
+        node2("c") {
+            node2("e") {
+                node2("g")
             }
-            const {  }
+            node2("f")
         }
     }
-    g.print()
+    println(n.size)
+
+    show(n)*/
+
+    val c = node2(Add() as Operation) {
+        node2(Const(10.0) as Operation)
+        node2(Const(25.0) as Operation)
+    }
+    val d = calc(c)
+    println(d)
+
+}
+
+fun show(node: Node2<out String>) {
+    println(node.value)
+    for (sub in node.children) {
+        show(sub)
+    }
+}
+
+fun calc(node: Node2<out Operation>): Double {
+    val args = mutableListOf<Double>()
+    for (sub in node.children) {
+        args.add(calc(sub))
+    }
+    return node.value.calc(*args.toDoubleArray())
 }
