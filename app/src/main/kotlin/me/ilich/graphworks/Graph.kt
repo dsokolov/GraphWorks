@@ -2,7 +2,6 @@ package me.ilich.graphworks
 
 import me.ilich.graphworks.operations.Const
 import me.ilich.graphworks.operations.Operation
-import me.ilich.graphworks.operations.ParamSource
 
 class Graph(vararg pos: Pos) {
 
@@ -30,9 +29,9 @@ class Graph(vararg pos: Pos) {
         nodes = l.toList()
     }
 
-    fun calc(paramSource: ParamSource? = null): Double = calcFromIndex(0, paramSource)
+    fun calc(paramSource: (String) -> Double = { 0.0 }): Double = calcFromIndex(0, paramSource)
 
-    private fun calcFromIndex(fromIndex: Int, paramSource: ParamSource? = null): Double {
+    private fun calcFromIndex(fromIndex: Int, paramSource: (String) -> Double): Double {
         val node = nodes[fromIndex];
         val args = mutableListOf<Double>()
         for (toIndex in 0..nodesCount - 1) {

@@ -2,7 +2,6 @@ package me.ilich.graphworks
 
 import me.ilich.graphworks.operations.Mult
 import me.ilich.graphworks.operations.Param
-import me.ilich.graphworks.operations.ParamSource
 
 object App {
 
@@ -15,14 +14,13 @@ object App {
                 Graph.Pos(Param("x"), 2, 0)
         )
         for (x in -10..10) {
-            val y = g.calc(object : ParamSource {
-                override fun onParams(name: String): Double {
-                    if (name == "x") {
-                        return x.toDouble()
-                    } else {
-                        return 0.0
-                    }
+            val y = g.calc({
+                if (it == "x") {
+                    x.toDouble()
+                } else {
+                    0.0
                 }
+
             })
             println("$x -> $y")
         }

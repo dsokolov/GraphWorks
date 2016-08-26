@@ -1,11 +1,10 @@
 package me.ilich.graphworks.operations
 
-/**
- * Created by disokolov on 13.07.16.
- */
+import me.ilich.graphworks.Node2
+
 class Const(var value: Double) : NoArg() {
 
-    override fun onCalc(paramSource: ParamSource?): Double = value
+    override fun onCalc(paramSource: (String) -> Double): Double = value
 
     override fun onAsString(): String = value.toString()
 
@@ -29,3 +28,7 @@ class Const(var value: Double) : NoArg() {
     }
 
 }
+
+fun const(c: Double, init: Node2<Operation>.() -> Unit = {}): Node2<Operation> = node2(Const(c) as Operation, init)
+
+fun Node2<Operation>.const(c: Double, init: Node2<Operation>.() -> Unit = {}) = this.node2(Const(c) as Operation, init)

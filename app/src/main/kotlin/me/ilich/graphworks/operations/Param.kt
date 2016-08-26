@@ -1,14 +1,10 @@
 package me.ilich.graphworks.operations
 
+import me.ilich.graphworks.Node2
+
 class Param(val name: String) : NoArg() {
 
-    override fun onCalc(paramSource: ParamSource?): Double {
-        if (paramSource == null) {
-            return 0.0
-        } else {
-            return paramSource.onParams(name)
-        }
-    }
+    override fun onCalc(paramSource: (String) -> Double): Double = paramSource.invoke(name)
 
     override fun onAsString(): String = "$name"
 
@@ -35,3 +31,7 @@ class Param(val name: String) : NoArg() {
     }
 
 }
+
+fun param(name: String, init: Node2<Operation>.() -> Unit = {}): Node2<Operation> = node2(Param(name) as Operation, init)
+
+fun Node2<Operation>.param(name: String, init: Node2<Operation>.() -> Unit = {}) = this.node2(Param(name) as Operation, init)

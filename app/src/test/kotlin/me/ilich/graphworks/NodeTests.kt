@@ -20,13 +20,11 @@ class NodeTests {
 
     @Test
     fun paramNode() {
-        val source = object : ParamSource {
-            override fun onParams(name: String): Double {
-                if (name == "x") {
-                    return 5.0
-                } else {
-                    return 0.0
-                }
+        val source: (String) -> Double = {
+            if (it == "x") {
+                5.0
+            } else {
+                0.0
             }
         }
         val node = Param("x")

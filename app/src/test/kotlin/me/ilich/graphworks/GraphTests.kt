@@ -1,6 +1,9 @@
 package me.ilich.graphworks
 
-import me.ilich.graphworks.operations.*
+import me.ilich.graphworks.operations.Add
+import me.ilich.graphworks.operations.Const
+import me.ilich.graphworks.operations.Mult
+import me.ilich.graphworks.operations.Param
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test
@@ -42,15 +45,13 @@ class GraphTests {
 
     @Test
     fun calcD() {
-        val source = object : ParamSource {
-            override fun onParams(name: String): Double {
-                if (name == "x") {
-                    return 2.0
-                } else if (name == "y") {
-                    return 3.0
-                } else {
-                    return 0.0
-                }
+        val source: (String) -> Double = {
+            if (it == "x") {
+                2.0
+            } else if (it == "y") {
+                3.0
+            } else {
+                0.0
             }
         }
 
