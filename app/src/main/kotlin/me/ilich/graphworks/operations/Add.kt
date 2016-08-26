@@ -1,6 +1,6 @@
 package me.ilich.graphworks.operations
 
-import me.ilich.graphworks.Node2
+import me.ilich.graphworks.Node
 
 class Add : TwoArg() {
 
@@ -14,6 +14,6 @@ class Add : TwoArg() {
 
 }
 
-fun add(init: Node2<Operation>.() -> Unit = {}): Node2<Operation> = node2(Add() as Operation, init)
+fun add(init: Node<Operation>.() -> Unit = {}): Node<Operation> = node(Add() as Operation, init)
 
-fun Node2<Operation>.add(init: Node2<Operation>.() -> Unit = {}) = this.node2(Add() as Operation, init)
+fun Node<Operation>.add(init: Node<Operation>.() -> Unit = {}) = this.node(Add() as Operation, init)

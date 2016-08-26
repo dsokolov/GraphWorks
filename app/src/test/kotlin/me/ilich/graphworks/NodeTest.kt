@@ -3,7 +3,7 @@ package me.ilich.graphworks
 import org.junit.Test
 
 
-class Node2Test {
+class NodeTest {
 
     @Test
     fun testA() {

@@ -1,6 +1,6 @@
 package me.ilich.graphworks.operations
 
-import me.ilich.graphworks.Node2
+import me.ilich.graphworks.Node
 
 abstract class Operation(val argCount: Int) {
 
@@ -35,14 +35,14 @@ abstract class Operation(val argCount: Int) {
 
 }
 
-fun <T> node2(v: T, init: Node2<T>.() -> Unit = {}): Node2<T> {
-    val result = Node2(v)
+fun <T> node(v: T, init: Node<T>.() -> Unit = {}): Node<T> {
+    val result = Node(v)
     result.init()
     return result
 }
 
-fun <T> Node2<T>.node2(v: T, init: Node2<T>.() -> Unit = {}) {
-    val result = Node2<T>(v)
+fun <T> Node<T>.node(v: T, init: Node<T>.() -> Unit = {}) {
+    val result = Node<T>(v)
     result.init()
     this.children.add(result)
 }

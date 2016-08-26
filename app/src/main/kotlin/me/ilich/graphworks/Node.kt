@@ -1,8 +1,8 @@
 package me.ilich.graphworks
 
-class Node2<T>(val value: T) {
+class Node<T>(val value: T) {
 
-    val children = mutableListOf<Node2<T>>()
+    val children = mutableListOf<Node<T>>()
 
     val size: Int
         get() = children.sumBy { it.size } + 1
