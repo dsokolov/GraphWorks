@@ -8,7 +8,7 @@ object App {
     @JvmStatic fun main(params: Array<String>) {
         println("graph")
 
-        val g = Graph(
+/*        val g = Graph(
                 Graph.Pos(Mult(), 0),
                 Graph.Pos(Param("x"), 1, 0),
                 Graph.Pos(Param("x"), 2, 0)
@@ -23,7 +23,7 @@ object App {
 
             })
             println("$x -> $y")
-        }
+        }*/
 
     }
 

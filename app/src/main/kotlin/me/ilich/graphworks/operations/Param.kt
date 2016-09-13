@@ -6,11 +6,9 @@ class Param(val name: String) : NoArg() {
 
     override fun onCalc(paramSource: (String) -> Double): Double = paramSource.invoke(name)
 
-    override fun onAsString(): String = "$name"
+    override fun onAsString() = "$name"
 
-    override fun toString(): String {
-        return "Operation param $name"
-    }
+    override fun toString() = "Operation param $name"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -29,6 +27,8 @@ class Param(val name: String) : NoArg() {
         result = 31 * result + name.hashCode()
         return result
     }
+
+    override fun copy() = Param(name)
 
 }
 

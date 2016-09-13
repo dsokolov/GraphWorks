@@ -17,14 +17,12 @@ class NodeTests {
         assertEquals("Operation 10.0", node.toString())
     }
 
-
     @Test
     fun paramNode() {
         val source: (String) -> Double = {
-            if (it == "x") {
-                5.0
-            } else {
-                0.0
+            when (it) {
+                "x" -> 5.0
+                else -> 0.0
             }
         }
         val node = Param("x")

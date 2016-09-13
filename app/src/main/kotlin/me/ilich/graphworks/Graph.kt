@@ -1,88 +1,61 @@
 package me.ilich.graphworks
 
-import me.ilich.graphworks.operations.Const
 import me.ilich.graphworks.operations.Operation
+import java.util.concurrent.atomic.AtomicInteger
 
-class Graph(vararg pos: Pos) {
+class Graph(val rootNode: Node<Operation>) {
 
-    class Pos(val node: Operation, val pos: Int? = null, val parent: Int? = null)
-
-    private val nodesCount = pos.size
-    private val nodes: List<Operation>;
-    private val matrix = Matrix<Int>(nodesCount, 0)
+    val nodesArray: Array<Node<Operation>>
 
     init {
-        val l: MutableList<Operation> = mutableListOf()
-        pos.forEach {
-            l.add(it.node)
-            if (it.parent != null) {
-                val p = when (it.pos) {
-                    null -> l.size
-                    else -> it.pos
-                }
-                if (it.parent != p) {
-                    matrix[it.parent, p] = 1
-                    matrix[p, it.parent] = -1
-                }
-            }
-        }
-        nodes = l.toList()
+        val nodes = mutableListOf<Node<Operation>>()
+        addToList(nodes, rootNode)
+        nodesArray = nodes.toTypedArray()
     }
 
-    fun calc(paramSource: (String) -> Double = { 0.0 }): Double = calcFromIndex(0, paramSource)
+    private fun addToList(list: MutableList<Node<Operation>>, node: Node<Operation>) {
+        list.add(node)
+        for (sub in node.children) {
+            addToList(list, sub)
+        }
+    }
 
-    private fun calcFromIndex(fromIndex: Int, paramSource: (String) -> Double): Double {
-        val node = nodes[fromIndex];
+    val nodesCount: Int
+        get() = nodesArray.size
+
+    fun calc(paramSource: (String) -> Double = { 0.0 }): Double = calcFromNode(rootNode, paramSource)
+
+    private fun calcFromNode(node: Node<Operation>, paramSource: (String) -> Double): Double {
         val args = mutableListOf<Double>()
-        for (toIndex in 0..nodesCount - 1) {
-            val link = matrix[fromIndex, toIndex]
-            if (link == 1) {
-                val v = calcFromIndex(toIndex, paramSource = paramSource)
-                args.add(v)
-            }
+        for (sub in node.children) {
+            val arg = calcFromNode(sub, paramSource)
+            args.add(arg)
         }
-        return node.calc(*args.toDoubleArray(), paramSource = paramSource);
+        return node.value.calc(*args.toDoubleArray(), paramSource = paramSource)
     }
 
-    fun asString(): String {
-        if (nodesCount == 0) {
-            return "()"
-        } else {
-            return stringFromIndex(0)
-        }
-    }
+    fun asString(): String = stringFromNode(rootNode)
 
-    private fun stringFromIndex(fromIndex: Int): String {
-        val node = nodes[fromIndex];
+    private fun stringFromNode(node: Node<Operation>): String {
         val args = mutableListOf<String>()
-        for (toIndex in 0..nodesCount - 1) {
-            val link = matrix[fromIndex, toIndex]
-            if (link == 1) {
-                val v = stringFromIndex(toIndex)
-                args.add(v)
-            }
+        for (sub in node.children) {
+            val arg = stringFromNode(sub)
+            args.add(arg)
         }
-        return node.asString(*args.toTypedArray());
+        return node.value.asString(*args.toTypedArray())
     }
 
-    fun subGraph(fromIndex: Int): Graph {
-        val subNodes = mutableListOf<Pos>()
-        val rootNode = nodes[fromIndex]
-        subNodes.add(Pos(rootNode, 0))
-        collectSubNodes(this, subNodes, fromIndex)
-        return Graph(*subNodes.toTypedArray())
-    }
-
-    fun outgoingLinksRecursive(fromIndex: Int): Int {
-        var size = 0
-        for (toIndex in 0..nodesCount - 1) {
-            val link = matrix[fromIndex, toIndex]
-            if (link == 1) {
-                size++
-                size += outgoingLinksRecursive(toIndex)
+    operator fun get(index: Int): Graph {
+        if (index < 0 || index >= nodesCount) {
+            throw ArrayIndexOutOfBoundsException()
+        }
+        var n: Node<Operation> = rootNode
+        forEachNode { forIndex, depth, node ->
+            if (index == forIndex) {
+                n = node
             }
         }
-        return size
+        return Graph(n.copy())
     }
 
     override fun equals(other: Any?): Boolean {
@@ -91,88 +64,73 @@ class Graph(vararg pos: Pos) {
 
         other as Graph
 
-        if (nodesCount != other.nodesCount) return false
-        if (nodes != other.nodes) return false
-        if (matrix != other.matrix) return false
+        if (rootNode != other.rootNode) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = nodesCount
-        result = 31 * result + nodes.hashCode()
-        result = 31 * result + matrix.hashCode()
-        return result
+        return rootNode.hashCode()
+    }
+
+    fun replaceNode(i: Int, graph: Graph): Graph {
+        val newRootNode = rootNode.copy()
+        if (i == 0) {
+            return Graph(graph.rootNode.copy())
+        } else {
+            val ind = AtomicInteger(0)
+            forEachRecursive(ind, newRootNode, null) {
+                index, node, parentNode ->
+                if (index.get() == i) {
+                    if (parentNode != null) {
+                        val childIndex = parentNode.children.indexOf(node)
+                        parentNode.children.add(childIndex, graph.rootNode)
+                        parentNode.children.remove(node)
+                    }
+                }
+            }
+        }
+        val newGraph = Graph(newRootNode);
+        return newGraph
     }
 
     override fun toString(): String {
         val sb = StringBuilder()
-        sb.append("expr = ${asString()}\n")
-        sb.append("matrix:\n")
-        sb.append(matrix.toString())
+        var lastDepth = 0
+        forEachNode {
+            index, depth, node ->
+            if (depth > lastDepth) {
+                sb.append("\n")
+                lastDepth = depth
+            }
+            sb.append(node)
+        }
         return sb.toString()
     }
 
-    fun replaceNode(replaceNodeIndex: Int, graph: Graph): Graph {
-        val newGraphNodes = mutableListOf<Pos>()
-        if (replaceNodeIndex == 0) {
-            collectSubNodes(graph, newGraphNodes, null)
-        } else {
-            collectSubNodesExcept(this, newGraphNodes, null, replaceNodeIndex, graph)
-        }
-        return Graph(*newGraphNodes.toTypedArray())
-    }
-
-    private fun collectSubNodes(graph: Graph, list: MutableList<Graph.Pos>, parentIndex: Int?) {
-        val subIndexes = mutableListOf<Int>()
-        if (parentIndex == null) {
-            val node = graph.nodes[0]
-            list.add(Graph.Pos(node, 0))
-            subIndexes.add(0)
-        } else {
-            for (toIndex in 0..graph.nodesCount - 1) {
-                if (toIndex != parentIndex) {
-                    val link = graph.matrix[parentIndex, toIndex]
-                    if (link == 1) {
-                        val node = graph.nodes[toIndex]
-                        val pos = list.size
-                        list.add(Graph.Pos(node, pos, parentIndex))
-                        subIndexes.add(toIndex)
-                    }
-                }
+    fun forEachNode(iterator: (index: Int, depth: Int, currentNode: Node<Operation>) -> Unit) {
+        var index = 0
+        var depth = 0
+        val nodes = mutableListOf(rootNode)
+        val newList = mutableListOf<Node<Operation>>()
+        while (nodes.size > 0) {
+            for (node in nodes) {
+                iterator(index, depth, node)
+                index++
+                newList.addAll(node.children)
             }
-        }
-        for (subIndex in subIndexes) {
-            collectSubNodes(graph, list, subIndex)
+            depth++
+            nodes.clear()
+            nodes.addAll(newList)
+            newList.clear()
         }
     }
 
-    private fun collectSubNodesExcept(graph: Graph, list: MutableList<Graph.Pos>, parentIndex: Int?, exceptIndex: Int, exceptGraph: Graph) {
-        val subIndexes = mutableListOf<Int>()
-        if (parentIndex == null) {
-            val node = graph.nodes[0]
-            list.add(Graph.Pos(node, 0))
-            subIndexes.add(0)
-        } else {
-            for (toIndex in 0..graph.nodesCount - 1) {
-                if (toIndex != parentIndex) {
-                    val link = graph.matrix[parentIndex, toIndex]
-                    if (link == 1) {
-                        val node = graph.nodes[toIndex]
-                        val pos = list.size
-                        list.add(Graph.Pos(node, pos, parentIndex))
-                        subIndexes.add(toIndex)
-                    }
-                }
-            }
-        }
-        for (subIndex in subIndexes) {
-            if (subIndex == exceptIndex) {
-                //collectSubNodes(exceptGraph, list, null)
-                list.add(Graph.Pos(Const(999.0), parent = parentIndex))
-            } else {
-                collectSubNodesExcept(graph, list, subIndex, exceptIndex, exceptGraph)
-            }
+    fun forEachRecursive(index: AtomicInteger, node: Node<Operation>, parentNode: Node<Operation>?, iterator: (index: AtomicInteger, node: Node<Operation>, parentNode: Node<Operation>?) -> Unit) {
+        iterator(index, node, parentNode)
+        index.set(index.get() + 1)
+        node.children.forEach {
+            forEachRecursive(index, it, node, iterator)
         }
     }
 

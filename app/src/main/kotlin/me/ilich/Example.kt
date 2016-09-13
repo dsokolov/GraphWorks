@@ -1,16 +1,16 @@
 package me.ilich
 
-import me.ilich.graphworks.Node
-import me.ilich.graphworks.genetic.Genetic
-import me.ilich.graphworks.operations.Operation
-import me.ilich.graphworks.operations.add
-import me.ilich.graphworks.operations.mult
-import me.ilich.graphworks.operations.param
-import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 
 fun main(args: Array<String>) {
 
-    val c = add() {
+    val a = A()
+    val i = AtomicInteger(0)
+    a.foo(i)
+    print(i)
+
+
+/*    val c = add() {
         mult {
             param("x")
             param("x")
@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
     val d = calc(c, paramSource)
     println(d)
 
-    val r = Random()
+    val r = Random()*/
 
 /*    val genetic = Genetic<Int>(
             cross = { x: Int, y: Int ->
@@ -42,7 +42,7 @@ fun main(args: Array<String>) {
     val l = genetic.generate(listOf(100, -50, 37, -23))
     println(l)*/
 
-    val s = "privet"
+/*    val s = "privet"
 
     val genetic = Genetic<String>(
             cross = { x: String, y: String ->
@@ -90,18 +90,23 @@ fun main(args: Array<String>) {
             }
     )
     val l = genetic.generate(listOf("p", "r", "i", "v", "e", "t"))
-    println(l)
+    println(l)*/
 
 }
 
+/*
 fun calc(node: Node<out Operation>, paramSource: (String) -> Double): Double {
     val args = mutableListOf<Double>()
     for (sub in node.children) {
         args.add(calc(sub, paramSource))
     }
     return node.value.calc(*args.toDoubleArray(), paramSource = paramSource)
-}
+}*/
 
-fun test(a: Int) {
+class A {
+
+    fun foo(i: AtomicInteger) {
+        i.set(7)
+    }
 
 }

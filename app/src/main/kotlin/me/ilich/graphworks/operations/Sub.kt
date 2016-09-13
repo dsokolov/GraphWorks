@@ -4,13 +4,13 @@ import me.ilich.graphworks.Node
 
 class Sub : TwoArg() {
 
-    override fun onCalc(a: Double, b: Double, paramSource: (String) -> Double): Double = a - b
+    override fun onCalc(a: Double, b: Double, paramSource: (String) -> Double) = a - b
 
     override fun onAsString(a: String, b: String) = "( $a - $b )"
 
-    override fun toString(): String{
-        return "Operation -"
-    }
+    override fun toString() = "Operation -"
+
+    override fun copy(): Sub = Sub()
 
 }
 

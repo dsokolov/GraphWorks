@@ -8,7 +8,7 @@ class Const(var value: Double) : NoArg() {
 
     override fun onAsString(): String = value.toString()
 
-    override fun equals(other: Any?): Boolean{
+    override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
@@ -19,13 +19,13 @@ class Const(var value: Double) : NoArg() {
         return true
     }
 
-    override fun hashCode(): Int{
+    override fun hashCode(): Int {
         return value.hashCode()
     }
 
-    override fun toString(): String{
-        return "Operation $value"
-    }
+    override fun toString() = "Operation $value"
+
+    override fun copy(): Const = Const(value)
 
 }
 

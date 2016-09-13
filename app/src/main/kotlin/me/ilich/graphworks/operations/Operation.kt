@@ -1,8 +1,9 @@
 package me.ilich.graphworks.operations
 
+import me.ilich.graphworks.Copyable
 import me.ilich.graphworks.Node
 
-abstract class Operation(val argCount: Int) {
+abstract class Operation(val argCount: Int) : Copyable {
 
     fun calc(vararg arg: Double, paramSource: (String) -> Double = { 0.0 }): Double {
         assert(arg.size == argCount)
@@ -35,13 +36,13 @@ abstract class Operation(val argCount: Int) {
 
 }
 
-fun <T> node(v: T, init: Node<T>.() -> Unit = {}): Node<T> {
+fun <T : Copyable> node(v: T, init: Node<T>.() -> Unit = {}): Node<T> {
     val result = Node(v)
     result.init()
     return result
 }
 
-fun <T> Node<T>.node(v: T, init: Node<T>.() -> Unit = {}) {
+fun <T : Copyable> Node<T>.node(v: T, init: Node<T>.() -> Unit = {}) {
     val result = Node<T>(v)
     result.init()
     this.children.add(result)

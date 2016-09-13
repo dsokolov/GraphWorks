@@ -8,9 +8,9 @@ class Mult : TwoArg() {
 
     override fun onAsString(a: String, b: String) = "( $a * $b )"
 
-    override fun toString(): String{
-        return "Operation *"
-    }
+    override fun toString() = "Operation *"
+
+    override fun copy(): Mult = Mult()
 
 }
 

@@ -8,9 +8,9 @@ class Abs : OneArg() {
 
     override fun onAsString(a: String): String = "| $a |"
 
-    override fun toString(): String {
-        return "Operation abs()"
-    }
+    override fun toString(): String = "Operation abs()"
+
+    override fun copy(): Abs = Abs()
 
 }
 
