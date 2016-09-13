@@ -7,21 +7,6 @@ import org.junit.Test
 class OperationTest {
 
     @Test
-    fun constNode() {
-        val node = Const(10.0)
-        assertEquals(10.0, node.calc(), 0.1)
-        try {
-            node.calc(1.0)
-        } catch (e: Exception) {
-            assertTrue(e is IndexOutOfBoundsException)
-        }
-        assertEquals(node.asString(), "10.0")
-        assertEquals(Const(10.0), node)
-        assertNotEquals(Const(0.0), node)
-        assertEquals("Operation 10.0", node.toString())
-    }
-
-    @Test
     fun paramNode() {
         val source: (String) -> Double = {
             when (it) {
@@ -39,27 +24,6 @@ class OperationTest {
         assertEquals(node.asString(), "x")
         assertEquals(Param("x"), node)
         assertEquals("Operation param x", node.toString())
-    }
-
-    @Test
-    fun absNode() {
-        val node = Abs()
-        assertEquals(10.0, node.calc(-10.0), 0.1)
-        assertEquals(10.0, node.calc(10.0), 0.1)
-        assertEquals(0.0, node.calc(0.0), 0.1)
-        try {
-            node.calc()
-        } catch (e: Exception) {
-            assertTrue(e is IndexOutOfBoundsException)
-        }
-        try {
-            node.calc(1.0, 2.0)
-        } catch (e: Exception) {
-            assertTrue(e is IndexOutOfBoundsException)
-        }
-        assertEquals(node.asString("10.0"), "| 10.0 |")
-        assertEquals(Abs(), node)
-        assertEquals("Operation abs()", node.toString())
     }
 
     @Test

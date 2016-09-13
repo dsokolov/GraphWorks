@@ -4,7 +4,7 @@ import me.ilich.graphworks.Node
 
 class Mult : TwoAndMoreArg() {
 
-    override fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double {
+    override fun onCalc(vararg arg: Double, paramSource: ((String) -> (Double))?): Double {
         var m: Double = 1.0
         for (element in arg) {
             m = m * element
@@ -13,6 +13,10 @@ class Mult : TwoAndMoreArg() {
     }
 
     override fun onAsString(vararg arg: String) = arg.joinToString(separator = " * ", prefix = "( ", postfix = " )")
+
+    override fun onToConst(vararg arg: Operation): Const {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun toString() = "Operation *"
 

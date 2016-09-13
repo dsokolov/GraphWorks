@@ -4,9 +4,13 @@ import me.ilich.graphworks.Node
 
 class Sub : TwoArg() {
 
-    override fun onCalc(a: Double, b: Double, paramSource: (String) -> Double) = a - b
+    override fun onCalc(a: Double, b: Double, paramSource: ((String) -> (Double))?) = a - b
 
     override fun onAsString(a: String, b: String) = "( $a - $b )"
+
+    override fun onToConst(a: Operation, b: Operation): Const {
+        throw UnsupportedOperationException("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
     override fun toString() = "Operation -"
 

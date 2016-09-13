@@ -13,19 +13,26 @@ abstract class Operation(val minArgCount: Int?, val maxArgCount: Int?) : Copyabl
         }
     }
 
-    fun calc(vararg arg: Double, paramSource: (String) -> Double = { 0.0 }): Double {
+    fun calc(vararg arg: Double, paramSource: ((String) -> (Double))? = null): Double {
         checkArgCount(arg.size)
         return onCalc(*arg, paramSource = paramSource)
     }
-
-    protected abstract fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double
 
     fun asString(vararg arg: String): String {
         checkArgCount(arg.size)
         return onAsString(*arg)
     }
 
+    fun toConst(vararg arg: Operation): Const? {
+        checkArgCount(arg.size)
+        return onToConst(*arg)
+    }
+
+    protected abstract fun onCalc(vararg arg: Double, paramSource: ((String) -> (Double))? = null): Double
+
     protected abstract fun onAsString(vararg arg: String): String
+
+    protected abstract fun onToConst(vararg arg: Operation): Const?
 
     private fun checkArgCount(size: Int) {
         if (minArgCount != null) {

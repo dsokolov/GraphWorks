@@ -4,9 +4,17 @@ import me.ilich.graphworks.Node
 
 class Param(val name: String) : NoArg() {
 
-    override fun onCalc(paramSource: (String) -> Double): Double = paramSource.invoke(name)
+    override fun onCalc(paramSource: ((String) -> (Double))?): Double {
+        if (paramSource == null) {
+            throw NullPointerException("param source")
+        } else {
+            return paramSource.invoke(name)
+        }
+    }
 
     override fun onAsString() = "$name"
+
+    override fun onToConst(): Const? = null
 
     override fun toString() = "Operation param $name"
 

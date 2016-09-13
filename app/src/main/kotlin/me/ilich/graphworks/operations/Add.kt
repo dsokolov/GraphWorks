@@ -4,9 +4,18 @@ import me.ilich.graphworks.Node
 
 class Add : TwoAndMoreArg() {
 
-    override fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double = arg.sum()
+    override fun onCalc(vararg arg: Double, paramSource: ((String) -> (Double))?): Double = arg.sum()
 
     override fun onAsString(vararg arg: String) = arg.joinToString(separator = " + ", prefix = "( ", postfix = " )")
+
+    override fun onToConst(vararg arg: Operation): Const? {
+        if (arg.filterNot { it is Const }.size == 0) {
+            val sum = arg.sumByDouble { (it as Const).value }
+            return Const(sum)
+        } else {
+            return null
+        }
+    }
 
     override fun toString() = "Operation +"
 

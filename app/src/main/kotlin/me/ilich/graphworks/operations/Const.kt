@@ -4,9 +4,11 @@ import me.ilich.graphworks.Node
 
 class Const(var value: Double) : NoArg() {
 
-    override fun onCalc(paramSource: (String) -> Double): Double = value
+    override fun onCalc(paramSource: ((String) -> (Double))?): Double = value
 
     override fun onAsString(): String = value.toString()
+
+    override fun onToConst(): Const = Const(value)
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
