@@ -5,23 +5,8 @@ import java.util.concurrent.atomic.AtomicInteger
 
 class Graph(val rootNode: Node<Operation>) {
 
-    val nodesArray: Array<Node<Operation>>
-
-    init {
-        val nodes = mutableListOf<Node<Operation>>()
-        addToList(nodes, rootNode)
-        nodesArray = nodes.toTypedArray()
-    }
-
-    private fun addToList(list: MutableList<Node<Operation>>, node: Node<Operation>) {
-        list.add(node)
-        for (sub in node.children) {
-            addToList(list, sub)
-        }
-    }
-
     val nodesCount: Int
-        get() = nodesArray.size
+        get() = rootNode.size + 1
 
     fun calc(paramSource: (String) -> Double = { 0.0 }): Double = calcFromNode(rootNode, paramSource)
 

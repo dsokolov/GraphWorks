@@ -6,7 +6,9 @@ import me.ilich.graphworks.Node
 abstract class Operation(val argCount: Int) : Copyable {
 
     fun calc(vararg arg: Double, paramSource: (String) -> Double = { 0.0 }): Double {
-        assert(arg.size == argCount)
+        if (arg.size != argCount) {
+            throw IndexOutOfBoundsException("${this} should have $argCount arguments, but found ${arg.size}")
+        }
         return onCalc(*arg, paramSource = paramSource)
     }
 

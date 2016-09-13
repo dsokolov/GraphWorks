@@ -1,72 +1,81 @@
 package me.ilich.graphworks.genetic
 
+import java.util.*
+
 class Genetic<T>(
-        val cross: (a: T, b: T) -> T,
-        val errorMetric: (T) -> Double,
-        val mutate: (T) -> T
+        val startPopulation: () -> (List<T>),
+        val errorFun: (T) -> (Double),
+        val crossFun: (T, T) -> (T)
 ) {
 
-    inner class WithError<T>(val item: T, val error: Double){
+    fun execute(
+            onNewGeneration: (generation: Int, population: List<Being<T>>) -> Unit
+    ): Being<T> {
 
-        override fun equals(other: Any?): Boolean{
-            if (this === other) return true
-            if (other?.javaClass != javaClass) return false
+        var generationNum = 0
+        val population = mutableListOf<T>()
+        val beings = mutableListOf<Being<T>>()
 
-            other as WithError<*>
-
-            if (item != other.item) return false
-
-            return true
-        }
-
-        override fun hashCode(): Int{
-            return item?.hashCode() ?: 0
-        }
-
-    }
-
-    fun generate(generation: List<T>): List<T> {
-        var working = true
-        var nextGeneration = mutableListOf<WithError<T>>()
-        for (item in generation) {
-            nextGeneration.add(WithError(item, errorMetric.invoke(item)))
-        }
-        while (working) {
-            for (a in generation) {
-                for (b in generation) {
-                    if (a !== b) {
-                        val c = cross.invoke(a, b)
-                        nextGeneration.add(WithError(c, errorMetric.invoke(c)))
-                    }
+        population.addAll(startPopulation())
+        onNewGeneration(generationNum, beings)
+        while (generationNum < 10) {
+            generationNum++
+            val children = mutableListOf<T>()
+            for (beingA in beings) {
+                for (beingB in beings) {
+                    val child = crossFun(beingA.item, beingB.item)
+                    children.add(child)
                 }
             }
-            val iterate = nextGeneration.listIterator()
-            val mutated = mutableListOf<WithError<T>>()
-            while (iterate.hasNext()) {
-                val item = iterate.next()
-                val t = mutate.invoke(item.item)
-                mutated.add(WithError(t, errorMetric.invoke(t)))
-            }
-            nextGeneration.addAll(mutated)
-
-            val set = mutableSetOf<WithError<T>>()
-            set.addAll(nextGeneration)
-            nextGeneration = mutableListOf<WithError<T>>()
-            nextGeneration.addAll(set)
-
-            nextGeneration.sortBy { it.error }
-            nextGeneration = nextGeneration.subList(0, generation.size)
-
-            println("****")
-            println("${nextGeneration[0].item} ${nextGeneration[0].error}")
-            println("${nextGeneration[1].item} ${nextGeneration[1].error}")
-            working = nextGeneration[0].error > 10
+            population.addAll(children)
+            removeDuplicates(population)
+            fillBeings(beings, population)
+            washUpBeings(beings)
+            population.clear()
+            beings.forEach { population.add(it.item) }
+            onNewGeneration(generationNum, beings)
         }
-        val r = mutableListOf<T>()
-        for (item in nextGeneration) {
-            r.add(item.item)
-        }
-        return r
+        return beings[0]
     }
+
+    private fun fillBeings(beings: MutableList<Being<T>>, population: List<T>) {
+        beings.clear()
+        for (p in population) {
+            val error = errorFun(p)
+            val being = Being(p, error)
+            beings.add(being)
+        }
+        beings.sortBy { it.error }
+    }
+
+    fun removeDuplicates(list: MutableList<T>) {
+        val set = HashSet<T>()
+        for (item in list) {
+            set.add(item)
+        }
+        list.clear()
+        list.addAll(set)
+    }
+
+    private fun washUpBeings(beings: MutableList<Being<T>>) {
+        var errorSum = 0.0;
+        beings.forEach { errorSum += it.error }
+        val avgError = errorSum / beings.size
+        val iterator = beings.iterator()
+        while (iterator.hasNext()) {
+            val being = iterator.next()
+            if (being.error >= avgError) {
+                iterator.remove()
+            }
+        }
+        while (beings.size > 20) {
+            beings.removeAt(beings.size - 1)
+        }
+    }
+
+    class Being<T>(
+            val item: T,
+            val error: Double
+    )
 
 }

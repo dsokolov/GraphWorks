@@ -5,7 +5,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 class Node<T>(val value: T) : Copyable
 where T : Copyable {
 
-    //val children = mutableListOf<Node<T>>()
     val children = CopyOnWriteArrayList<Node<T>>()
 
     val size: Int
