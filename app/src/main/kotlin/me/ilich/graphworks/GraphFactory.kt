@@ -31,8 +31,17 @@ object GraphFactory {
     private fun randomNode(): Node<Operation> {
         val operation = randomOperation()
         val node = Node<Operation>(operation)
-        if (operation.argCount > 0) {
-            for (i in 0..operation.argCount - 1) {
+        var maxArgsCount = 2
+        if (operation.maxArgCount != null) {
+            maxArgsCount = operation.maxArgCount
+        }
+        var minArgsCount = 1
+        if (operation.minArgCount != null) {
+            minArgsCount = operation.minArgCount
+        }
+        val argsCount = random.nextInt(maxArgsCount - minArgsCount + 1) + minArgsCount
+        if (argsCount > 0) {
+            for (i in 0..argsCount - 1) {
                 val subNode = randomNode()
                 node.children.add(subNode)
             }

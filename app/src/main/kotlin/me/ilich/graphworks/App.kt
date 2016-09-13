@@ -7,23 +7,32 @@ object App {
 
     private val random = Random()
 
-    // sin(x)
+    private val f: (x: Double) -> (Double) = {
+        x ->
+        x * x
+    }
+
     private val learnTable = mapOf<Double, Double>(
-            Math.PI * 0.0 to Math.sin(Math.PI * 0.0),
-            Math.PI * 0.25 to Math.sin(Math.PI * 0.25),
-            Math.PI * 0.5 to Math.sin(Math.PI * 0.5),
-            Math.PI * 0.75 to Math.sin(Math.PI * 0.75),
-            Math.PI * 1.0 to Math.sin(Math.PI * 1.0),
-            Math.PI * 1.25 to Math.sin(Math.PI * 1.25),
-            Math.PI * 1.5 to Math.sin(Math.PI * 1.5),
-            Math.PI * 1.75 to Math.sin(Math.PI * 1.75),
-            Math.PI * 2.0 to Math.sin(Math.PI * 2.0)
+            -5.0 to 25.0,
+            -4.0 to 16.0,
+            -3.0 to 9.0,
+            -2.0 to 4.0,
+            -1.0 to 2.0,
+            0.0 to 0.0,
+            1.0 to 1.0,
+            2.0 to 4.0,
+            3.0 to 9.0,
+            4.0 to 16.0,
+            5.0 to 25.0
     )
 
     private val examTable = mapOf<Double, Double>(
-            Math.PI * 3.0 to Math.sin(Math.PI * 3.0)
+            -6.0 to 36.0,
+            -5.0 to 25.0,
+            0.0 to 0.0,
+            5.0 to 25.0,
+            6.0 to 36.0
     )
-
 
     private fun calcError(g: Graph): Double {
         var error = 0.0
@@ -36,7 +45,7 @@ object App {
                     0.0
                 }
             })
-            error += (expected - actual) * (expected - actual) * g.nodesCount
+            error += (expected - actual) * (expected - actual)
         }
         return Math.sqrt(error)
     }
@@ -60,25 +69,30 @@ object App {
                     a.replaceNode(crossIndex, b)
                 }
         )
-        val best = genetic.execute { generation, population ->
-/*            println("*** generation $generation ***")
+        val best = genetic.execute(maxGenerationCount = 99, expectedError = 2.1) { generation, error, population ->
+            println("*** generation $generation error = $error ***")
             population.forEach {
-                println("${it.error} ${it.item.asString()}")
-            }*/
+                // println("${it.error} ${it.item.asString()}")
+            }
         }
 
-        println(best.item.asString())
-        for (x in examTable.keys) {
-            val y = best.item.calc({
-                if (it == "x") {
-                    x.toDouble()
-                } else {
-                    0.0
-                }
-            })
-            println("y($x) = $y, expected ${examTable[x]}")
+        if (best != null) {
+            println(best.item.asString())
+            for (x in examTable.keys) {
+                val y = best.item.calc({
+                    if (it == "x") {
+                        x.toDouble()
+                    } else {
+                        0.0
+                    }
+                })
+                println("y($x) = $y, expected ${examTable[x]}")
+            }
+        } else {
+            println("null")
         }
     }
 
 }
+
 

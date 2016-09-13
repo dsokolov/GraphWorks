@@ -9,16 +9,20 @@ class Genetic<T>(
 ) {
 
     fun execute(
-            onNewGeneration: (generation: Int, population: List<Being<T>>) -> Unit
-    ): Being<T> {
+            maxGenerationCount: Int = 20,
+            expectedError: Double = 0.5,
+            onNewGeneration: (generation: Int, error: Double, population: List<Being<T>>) -> Unit
+    ): Being<T>? {
 
         var generationNum = 0
         val population = mutableListOf<T>()
         val beings = mutableListOf<Being<T>>()
 
         population.addAll(startPopulation())
-        onNewGeneration(generationNum, beings)
-        while (generationNum < 10) {
+        fillBeings(beings, population)
+        var error = beings.maxBy { it.error }?.error as Double
+        onNewGeneration(generationNum, error, beings)
+        while (generationNum < maxGenerationCount && error > expectedError) {
             generationNum++
             val children = mutableListOf<T>()
             for (beingA in beings) {
@@ -33,9 +37,10 @@ class Genetic<T>(
             washUpBeings(beings)
             population.clear()
             beings.forEach { population.add(it.item) }
-            onNewGeneration(generationNum, beings)
+            error = beings.maxBy { it.error }?.error as Double
+            onNewGeneration(generationNum, error, beings)
         }
-        return beings[0]
+        return beings.getOrNull(0)
     }
 
     private fun fillBeings(beings: MutableList<Being<T>>, population: List<T>) {

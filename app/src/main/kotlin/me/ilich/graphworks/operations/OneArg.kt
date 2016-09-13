@@ -1,6 +1,6 @@
 package me.ilich.graphworks.operations
 
-abstract class OneArg : Operation(1) {
+abstract class OneArg : Operation(minArgCount = 1, maxArgCount = 1) {
 
     override fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double = onCalc(arg[0], paramSource)
 

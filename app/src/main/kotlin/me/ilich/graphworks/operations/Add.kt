@@ -2,11 +2,11 @@ package me.ilich.graphworks.operations
 
 import me.ilich.graphworks.Node
 
-class Add : TwoArg() {
+class Add : TwoAndMoreArg() {
 
-    override fun onCalc(a: Double, b: Double, paramSource: (String) -> Double): Double = a + b
+    override fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double = arg.sum()
 
-    override fun onAsString(a: String, b: String) = "( $a + $b )"
+    override fun onAsString(vararg arg: String) = arg.joinToString(separator = " + ", prefix = "( ", postfix = " )")
 
     override fun toString() = "Operation +"
 

@@ -13,10 +13,11 @@ class GraphTests {
                 add {
                     const(4.0)
                     const(5.0)
+                    const(6.0)
                 }
         )
-        assertEquals(9.0, g.calc(), 0.1)
-        assertEquals("( 4.0 + 5.0 )", g.asString())
+        assertEquals(15.0, g.calc(), 0.1)
+        assertEquals("( 4.0 + 5.0 + 6.0 )", g.asString())
     }
 
     @Test

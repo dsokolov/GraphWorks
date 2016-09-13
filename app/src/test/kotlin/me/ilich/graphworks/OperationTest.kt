@@ -1,16 +1,20 @@
 package me.ilich.graphworks
 
 import me.ilich.graphworks.operations.*
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
+import org.junit.Assert.*
 import org.junit.Test
 
-class NodeTests {
+class OperationTest {
 
     @Test
     fun constNode() {
         val node = Const(10.0)
         assertEquals(10.0, node.calc(), 0.1)
+        try {
+            node.calc(1.0)
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
         assertEquals(node.asString(), "10.0")
         assertEquals(Const(10.0), node)
         assertNotEquals(Const(0.0), node)
@@ -27,6 +31,11 @@ class NodeTests {
         }
         val node = Param("x")
         assertEquals(5.0, node.calc(paramSource = source), 0.1)
+        try {
+            node.calc(10.0, paramSource = source)
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
         assertEquals(node.asString(), "x")
         assertEquals(Param("x"), node)
         assertEquals("Operation param x", node.toString())
@@ -38,6 +47,16 @@ class NodeTests {
         assertEquals(10.0, node.calc(-10.0), 0.1)
         assertEquals(10.0, node.calc(10.0), 0.1)
         assertEquals(0.0, node.calc(0.0), 0.1)
+        try {
+            node.calc()
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
+        try {
+            node.calc(1.0, 2.0)
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
         assertEquals(node.asString("10.0"), "| 10.0 |")
         assertEquals(Abs(), node)
         assertEquals("Operation abs()", node.toString())
@@ -46,8 +65,20 @@ class NodeTests {
     @Test
     fun addNode() {
         val node = Add()
+        try {
+            node.calc()
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
+        try {
+            node.calc(1.0)
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
         assertEquals(30.0, node.calc(10.0, 20.0), 0.1)
+        assertEquals(6.0, node.calc(1.0, 2.0, 3.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 + 20.0 )")
+        assertEquals(node.asString("10.0", "20.0", "30.0"), "( 10.0 + 20.0 + 30.0 )")
         assertEquals(Add(), node)
         assertEquals("Operation +", node.toString())
     }
@@ -64,8 +95,20 @@ class NodeTests {
     @Test
     fun multNode() {
         val node = Mult()
+        try {
+            node.calc()
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
+        try {
+            node.calc(1.0)
+        } catch (e: Exception) {
+            assertTrue(e is IndexOutOfBoundsException)
+        }
         assertEquals(200.0, node.calc(10.0, 20.0), 0.1)
+        assertEquals(6000.0, node.calc(10.0, 20.0, 30.0), 0.1)
         assertEquals(node.asString("10.0", "20.0"), "( 10.0 * 20.0 )")
+        assertEquals(node.asString("10.0", "20.0", "30.0"), "( 10.0 * 20.0 * 30.0 )")
         assertEquals(Mult(), node)
         assertEquals("Operation *", node.toString())
     }

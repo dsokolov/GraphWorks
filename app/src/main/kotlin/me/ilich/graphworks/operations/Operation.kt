@@ -3,23 +3,42 @@ package me.ilich.graphworks.operations
 import me.ilich.graphworks.Copyable
 import me.ilich.graphworks.Node
 
-abstract class Operation(val argCount: Int) : Copyable {
+abstract class Operation(val minArgCount: Int?, val maxArgCount: Int?) : Copyable {
+
+    init {
+        if (minArgCount != null && maxArgCount != null) {
+            if (maxArgCount < minArgCount) {
+                throw IllegalArgumentException("maxArgCount (${maxArgCount}) shuld be greather that minArgCount (${minArgCount})")
+            }
+        }
+    }
 
     fun calc(vararg arg: Double, paramSource: (String) -> Double = { 0.0 }): Double {
-        if (arg.size != argCount) {
-            throw IndexOutOfBoundsException("${this} should have $argCount arguments, but found ${arg.size}")
-        }
+        checkArgCount(arg.size)
         return onCalc(*arg, paramSource = paramSource)
     }
 
     protected abstract fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double
 
     fun asString(vararg arg: String): String {
-        assert(arg.size == argCount)
+        checkArgCount(arg.size)
         return onAsString(*arg)
     }
 
     protected abstract fun onAsString(vararg arg: String): String
+
+    private fun checkArgCount(size: Int) {
+        if (minArgCount != null) {
+            if (size < minArgCount) {
+                throw IndexOutOfBoundsException("${this} should have at last $minArgCount arguments, but found ${size}")
+            }
+        }
+        if (maxArgCount != null) {
+            if (size > maxArgCount) {
+                throw IndexOutOfBoundsException("${this} should have not more that $maxArgCount arguments, but found ${size}")
+            }
+        }
+    }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,13 +46,16 @@ abstract class Operation(val argCount: Int) : Copyable {
 
         other as Operation
 
-        if (argCount != other.argCount) return false
+        if (minArgCount != other.minArgCount) return false
+        if (maxArgCount != other.maxArgCount) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        return argCount
+        var result = minArgCount ?: 0
+        result = 31 * result + (maxArgCount ?: 0)
+        return result
     }
 
 }

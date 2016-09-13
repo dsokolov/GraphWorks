@@ -2,11 +2,17 @@ package me.ilich.graphworks.operations
 
 import me.ilich.graphworks.Node
 
-class Mult : TwoArg() {
+class Mult : TwoAndMoreArg() {
 
-    override fun onCalc(a: Double, b: Double, paramSource: (String) -> Double): Double = a * b
+    override fun onCalc(vararg arg: Double, paramSource: (String) -> Double): Double {
+        var m: Double = 1.0
+        for (element in arg) {
+            m = m * element
+        }
+        return m
+    }
 
-    override fun onAsString(a: String, b: String) = "( $a * $b )"
+    override fun onAsString(vararg arg: String) = arg.joinToString(separator = " * ", prefix = "( ", postfix = " )")
 
     override fun toString() = "Operation *"
 
