@@ -284,7 +284,10 @@ class GraphTests {
                 }
         ), g.replaceNode(6, paste))
 
-        assertEquals(Graph(
+    }
+
+    @Test fun replace3() {
+        val g = Graph(
                 add {
                     mult {
                         const(2.0)
@@ -295,7 +298,111 @@ class GraphTests {
                         const(4.0)
                     }
                 }
-        ), g.replaceNode(7, paste))
+        )
+        val paste = Graph(
+                sub {
+                    const(-10.0)
+                    const(10.0)
+                }
+        )
+
+        assertEquals(Graph(
+                sub {
+                    const(-10.0)
+                    const(10.0)
+                }
+        ), g.replaceNode(0, paste))
+
+        assertEquals(Graph(
+                add {
+                    sub {
+                        const(-10.0)
+                        const(10.0)
+                    }
+                    div {
+                        const(16.0)
+                        const(4.0)
+                    }
+                }
+        ), g.replaceNode(1, paste))
+
+        assertEquals(Graph(
+                add {
+                    mult {
+                        sub {
+                            const(-10.0)
+                            const(10.0)
+                        }
+                        const(3.0)
+                    }
+                    div {
+                        const(16.0)
+                        const(4.0)
+                    }
+                }
+        ), g.replaceNode(2, paste))
+
+        assertEquals(Graph(
+                add {
+                    mult {
+                        const(2.0)
+                        sub {
+                            const(-10.0)
+                            const(10.0)
+                        }
+                    }
+                    div {
+                        const(16.0)
+                        const(4.0)
+                    }
+                }
+        ), g.replaceNode(3, paste))
+
+        assertEquals(Graph(
+                add {
+                    mult {
+                        const(2.0)
+                        const(3.0)
+                    }
+                    sub {
+                        const(-10.0)
+                        const(10.0)
+                    }
+                }
+        ), g.replaceNode(4, paste))
+
+        assertEquals(Graph(
+                add {
+                    mult {
+                        const(2.0)
+                        const(3.0)
+                    }
+                    div {
+                        sub {
+                            const(-10.0)
+                            const(10.0)
+                        }
+                        const(4.0)
+                    }
+                }
+        ), g.replaceNode(5, paste))
+
+
+        assertEquals(Graph(
+                add {
+                    mult {
+                        const(2.0)
+                        const(3.0)
+                    }
+                    div {
+                        const(16.0)
+                        sub {
+                            const(-10.0)
+                            const(10.0)
+                        }
+                    }
+                }
+        ), g.replaceNode(6, paste))
 
     }
 

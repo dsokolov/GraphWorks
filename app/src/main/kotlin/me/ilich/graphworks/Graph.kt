@@ -74,6 +74,9 @@ class Graph(val rootNode: Node<Operation>) {
     }
 
     fun replaceNode(i: Int, graph: Graph): Graph {
+        if (i < 0 || i >= nodesCount) {
+            throw ArrayIndexOutOfBoundsException()
+        }
         val newRootNode = rootNode.copy()
         if (i == 0) {
             return Graph(graph.rootNode.copy())
